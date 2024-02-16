@@ -44,7 +44,7 @@ Some commands take up to a few hundred ms to respond, due to the time it takes t
     1. you can only set one type of temperature probe input for the temperature probe bank, either all RTD or all TC, not both
     2. Same with the analog inputs, they're either all 0-10V, 4-20mA or NTC
     3. Configuration for the different components can be found in their respective sections. Future upgrades will load configuration from inserted USB drive PortentaConfig.json
-    4. DIO pins do not seem to successfully read state (writing state seems fine). Best stick to DI and DO pins for these.
+    4. To use the DO or DIO pins, supply 24V to the "24V In" pins on their respective banks. After that, they work as expected. 
     5. External sensor bank is at the moment configured to be a BME680 chip connected via the 4-pin i2c connector on the front
 
 ## Command structure: 
@@ -74,12 +74,12 @@ GET SENSOR ENV temperature - Get the temperature reading from a sensor named "te
 
 // Checks:
 // Check ethernet functionality - done. 
-// Check DI write and read
-// Check DO write and read - done
-// Check DIO write and read - done, read does not return a high value when set high, not sure what's the issue
-// Check AI write and read
-// Check AO write and read 
+// Check DI read - done
+// Check DO write and read - done, remember to connect 24V to the "24V In" on the DO Terminal Block. 
+// Check DIO write and read - done, remember to connect 24V to the "24V In" on the DIO Terminal Block. 
+// Check AI write and read - no dice yet, connecting AO to an AI pin did not result in useful readings. 
+// Check AO write and read - write works 0-10.5V, checked with DMM, but read is nonsense. 
 // Check TEMP bank write and read with 3-wire RTDs
 // Check TEMP bank write and read with 2-wire TCs
-// Check ENV sensor bank read - done
+// Check ENV sensor bank read - done works. 
 // Check long-term stability
