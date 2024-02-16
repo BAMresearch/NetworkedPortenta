@@ -11,6 +11,8 @@ Installing this requires the Arduino IDE, tested on version 2.3.1, with (off the
   - Adafruit BME680 2.0.4: for interaction with the I2C environmental sensor
   - Adafruit Unified Sensor 1.1.14: Same as above
   - Arduino_USBHostMbed5 0.3.1: for USB storage
+
+Open an .ino file in the subdirectory NetworkedPortenta (with all the ino files) in your Arduino IDE, this should automatically open all the associated ino files. 
 Configuration of some sections can be done at the top of each .ino file. Upon compilation, 
 the Arduino IDE will automatically include all .ino files in the directory (in alphabetical order). 
 When upload to the board fails with a DFUError, sometimes it's helpful to double-click the reset button on the Arduino. 
