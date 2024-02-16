@@ -193,14 +193,17 @@ void listenForSocketClients() {
 }
 
 void listenForSerialCommands() {
-    if (Serial.available() > 0) {
-        String input = Serial.readStringUntil('\n');
-        input.trim();
-        if (input.length() > 0) {
-            String response = processCommand(input);
-            Serial.println(response);
-        }
-    }
+  if (!Serial) {
+    return; // nothing to do here. 
+  }
+  if (Serial.available() > 0) {
+      String input = Serial.readStringUntil('\n');
+      input.trim();
+      if (input.length() > 0) {
+          String response = processCommand(input);
+          Serial.println(response);
+      }
+  }
 }
 
 String processCommand(String command) {
