@@ -62,7 +62,8 @@ Available sensor banks include "ENV" or "ENVIRONMENTAL", which reads the attache
   - P, PRESSURE: the ambient pressure in mbar
   - dp, DEWPOINT: the dewpoint in degree C
   - G, GAS, GASRESISTANCE: the amount of volatile compounds in the gas stream in arbitrary units
-A second bank "TEMP", "TEMPERATURE", "TEMPERATUREPROBES" is available, this can read out the three temperature probe inputs on the PMC. 
+
+A second bank "TEMP", "TEMPERATURE", "TEMPERATUREPROBES" is available, this can read out the three temperature probe inputs (0-2) on the PMC. Configuration of the temperature probe types (PT100, PT1000 RTDs or K or J-type thermocouples) is done in the Sensors.ino segment.
 
 ## More example Commands:
 
@@ -70,16 +71,16 @@ SET DO 5 1 - Set digital output pin 5 to HIGH.
 GET DI 2 - Get the state of digital input pin 2.
 SET AO 3 10.0 - Set analog output pin 3 to 10V.
 GET AI 0 - Get the reading from analog input pin 0.
-GET SENSOR ENV temperature - Get the temperature reading from a sensor named "temperature".
+GET SENSOR ENV TEMP - Get the temperature reading from a sensor named "temperature".
 
-// Checks:
-// Check ethernet functionality - done. 
-// Check DI read - done
-// Check DO write and read - done, remember to connect 24V to the "24V In" on the DO Terminal Block. 
-// Check DIO write and read - done, remember to connect 24V to the "24V In" on the DIO Terminal Block. 
-// Check AI write and read - no dice yet, connecting AO to an AI pin did not result in useful readings. 
-// Check AO write and read - write works 0-10.5V, checked with DMM, but read is nonsense. 
-// Check TEMP bank write and read with 3-wire RTDs
-// Check TEMP bank write and read with 2-wire TCs
-// Check ENV sensor bank read - done works. 
-// Check long-term stability
+Checks:
+* Check ethernet functionality - done.
+* Check DI read - done
+* Check DO write and read - done, remember to connect 24V to the "24V In" on the DO Terminal Block. Can do >10 ops/s.
+* Check DIO write and read - done, remember to connect 24V to the "24V In" on the DIO Terminal Block. Can do >10 ops/s.
+* Check AI write and read - no dice yet, connecting AO to an AI pin did not result in useful readings. Can do >10 ops/s
+* Check AO write and read - write works 0-10.5V, checked with DMM, but read is nonsense. Can do >10 ops/s
+* Check TEMP bank write and read with 3-wire RTDs
+* Check TEMP bank write and read with 2-wire TCs
+* Check ENV sensor bank read - done works. This one is super slow as the BMP680 is slow to respond, taking about 200-300 ms (blocking) to respond to a single request. Can be fixed by updating internal values at regular intervals and just returning the internal stored values
+* Check long-term stability 
