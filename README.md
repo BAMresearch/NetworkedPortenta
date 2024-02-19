@@ -73,7 +73,17 @@ SET AO 3 10.0 - Set analog output pin 3 to 10V.
 GET AI 0 - Get the reading from analog input pin 0.
 GET SENSOR ENV TEMP - Get the temperature reading from a sensor named "temperature".
 
-Checks:
+## Future upgrades:
+
+One issue is that polling the I2C-connected environmental chip (and maybe the internal temperature probe readouts) takes quite a while, which can block other operations. As the Portenta has two cores which each can run their own Arduino code,
+the idea is to have one core (the M4 core for example) regularly poll and update the sensor parameters, while the second (M7) core handles the communication. 
+This shouldn't be too hard to implement, as long as we use the shared memory space for storing the sensor parameters and update interval. 
+
+The second upgrade is to allow adjustment of settings on the fly. At least the update interval should be settable, other options include latching of pins, and perhaps switching of AI and TEMP input types. 
+
+A third upgrade would be reading a configuration from an attached USB stick. Test code showed that it was possible to mount and read a file, but the JSON interpreter could not be made to work yet. 
+
+## Checks:
 * Check ethernet functionality - done.
 * Check DI read - done
 * Check DO write and read - done, remember to connect 24V to the "24V In" on the DO Terminal Block. Can do >10 ops/s.
@@ -83,4 +93,5 @@ Checks:
 * Check TEMP bank write and read with 3-wire RTDs
 * Check TEMP bank write and read with 2-wire TCs
 * Check ENV sensor bank read - done works. This one is super slow as the BMP680 is slow to respond, taking about 200-300 ms (blocking) to respond to a single request. Can be fixed by updating internal values at regular intervals and just returning the internal stored values
-* Check long-term stability 
+* Check long-term stability - running for several days, no problem detected.
+ 
