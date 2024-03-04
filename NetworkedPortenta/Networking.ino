@@ -6,15 +6,16 @@ EthernetInterface net;
 TCPSocket server;
 TCPSocket* client = nullptr; // Dynamically assigned when a connection is established
 
+bool useSerial = true; // can be set to false to disable controlling I/O via serial (debug messages only)
+
 // No need for MAC in EthernetInterface, handled internally
 // Network settings - for fixed IP
-const char* ip = "192.168.178.124";
-const char* netmask = "255.255.255.0";
-const char* gateway = "192.168.178.1";
-const int port = 1111;
-bool useDHCP = true;
 bool useEthernet = true; // can be set to false either externally or when ethernet checks fail
-
+const char* ip = "172.17.1.124";
+const char* netmask = "255.255.255.0";
+const char* gateway = "172.17.1.1";
+const int port = 1111;
+bool useDHCP = false;
 
 // // // // // // Non-user-adjustable variables // // // // // //
 // max input size expected for one socket command, like 'set relay 0 1' or 'get temp'
@@ -26,9 +27,12 @@ bool value = false;
 String receivedString ; // used only for reading incoming HTTP packet
 
 // EthernetServer serverS(1111); // socket port
-
-void initNetworking() {
+void initEthernet() {
   // Bring up the ethernet interface
+  if (!useEthernet) {
+    Serial.println("setting useEthernet set to false, not initializing ethernet.");
+    return;
+  }
   SocketAddress addr;
     if (useDHCP) {
       net.set_dhcp(true);
@@ -71,49 +75,56 @@ void initNetworking() {
     } else {
         Serial.println("Failed to open server");
     }
+
 }
 
-void listenForSocketClients() {
-    nsapi_error_t error;
-    
-    TCPSocket* client = server.accept(&error); // Accept a new connection
-    if (error != NSAPI_ERROR_OK) {
-        // Handle error or non-blocking mode indication
-        if (error == NSAPI_ERROR_WOULD_BLOCK) {
-            // Non-blocking mode and no incoming connection, handle accordingly
-            // Serial.print("Accept error: ");
-            // Serial.println(error);
-        } else {
-            // Some other error occurred
-            Serial.print("Accept error: ");
-            Serial.println(error);
-        }
-        return; // Exit the function, as there's no client to process
-    }
-    if (client != nullptr) {
-        // Successfully accepted a new connection
-        Serial.println("Client connected");
+void listenForSocket() {
+  if (!useEthernet) {
+    return; // nothing to do. 
+  }
+  nsapi_error_t error;
+  
+  TCPSocket* client = server.accept(&error); // Accept a new connection
+  if (error != NSAPI_ERROR_OK) {
+      // Handle error or non-blocking mode indication
+      if (error == NSAPI_ERROR_WOULD_BLOCK) {
+          // Non-blocking mode and no incoming connection, handle accordingly
+          // Serial.print("Accept error: ");
+          // Serial.println(error);
+      } else {
+          // Some other error occurred
+          Serial.print("Accept error: ");
+          Serial.println(error);
+      }
+      return; // Exit the function, as there's no client to process
+  }
+  if (client != nullptr) {
+      // Successfully accepted a new connection
+      Serial.println("Socket client connected");
 
-        // Example of reading data from the client
-        char buffer[128];
-        int len = client->recv(buffer, sizeof(buffer) - 1);
-        if (len > 0) {
-            buffer[len] = '\0'; // Null-terminate the string
-            String input = String(buffer);
-            String response = processCommand(input);
-            
-            // Send response back to client
-            client->send(response.c_str(), response.length());
-        }
+      // Example of reading data from the client
+      char buffer[128];
+      int len = client->recv(buffer, sizeof(buffer) - 1);
+      if (len > 0) {
+          buffer[len] = '\0'; // Null-terminate the string
+          String input = String(buffer);
+          String response = processCommand(input);
+          
+          // Send response back to client
+          client->send(response.c_str(), response.length());
+      }
 
-        client->close(); // Close the client connection
-        // this causes a hanggggg:
-        // delete client; // Deallocate the TCPSocket instance for the client
-        
-    }
+      client->close(); // Close the client connection
+      // this causes a hanggggg:
+      // delete client; // Deallocate the TCPSocket instance for the client
+      
+  }
 }
 
-void listenForSerialCommands() {
+void listenForSerial() {
+  if (!useSerial) {
+    return; // nothing to do here. 
+  }
   if (!Serial) {
     return; // nothing to do here. 
   }

@@ -91,15 +91,17 @@ int getD(String IOType, int IONumber){
 void initDigitalIO() {
   // Initialize digital I/O pins
   // assuming the programmable I/O ports can also provide 0.5A output, we can use these. They have a write and read method.
-  if (!digital_programmables.init()) {
-    Serial.println("GPIO expander initialization fail! ");
-  }
-  if (!digital_inputs.init()) {
-    Serial.println("Digital input GPIO expander initialization fail!!");
-  }
-  //let's also use the digital_outputs...
-  digital_outputs.setLatch();
-  digital_programmables.setLatch();
-  Serial.println("GPIO expander initialization done ");
+
+  // if (!digital_programmables.init()) {
+  //   Serial.println("GPIO expander initialization fail! ");
+  // }
+  // if (!digital_inputs.init()) {
+  //   Serial.println("Digital input GPIO expander initialization fail!!");
+  // }
+
+  // //let's also use the digital_outputs...
+  // digital_outputs.setLatch();
+  // digital_programmables.setLatch();
+  // Serial.println("GPIO expander initialization done ");
 
 }

@@ -32,12 +32,15 @@ void initAnalogIO() {
   analogReadResolution(16);
   switch (AIType) {
     case Voltage_0_10V:
+      Serial.println("Setting AI to 0-10V input");
       analog_in.set0_10V();
       break;
     case Current_4_20mA:
+      Serial.println("Setting AI to 4-20mA input");
       analog_in.set4_20mA();
       break; 
     case NTC:
+      Serial.println("Setting AI to NTC input");
       analog_in.setNTC();
       break;
   }    
@@ -49,6 +52,7 @@ void initAnalogIO() {
 }
 
 float getA(int pin) {
+  Serial.println("getA called for pin "+String(pin));
   if (pin>(AIStartPin + nAI) || pin<AIStartPin) return -1.0;
 
   int rawValue = analogRead(pin);

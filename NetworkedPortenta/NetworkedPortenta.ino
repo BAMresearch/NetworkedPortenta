@@ -41,21 +41,42 @@ using namespace machinecontrol;
 
 void setup() {
   Serial.begin(115200);
-  // while (!Serial); // wait for serial port to connect. Needed for native USB port only
+  uint32_t t0 = millis ();
+  while (!Serial && ((millis() - t0) < 2000ul)); // wait for serial port to connect. Needed for native USB port only
+  Serial.println("NetworkedPortenta initializing...");
 
+  Wire.begin();
+  // Initialize digital I/O pins
+  // assuming the programmable I/O ports can also provide 0.5A output, we can use these. They have a write and read method.
+  if (!digital_programmables.init()) {
+    Serial.println("GPIO expander initialization fail! ");
+  }
+  if (!digital_inputs.init()) {
+    Serial.println("Digital input GPIO expander initialization fail!!");
+  }
+
+  //let's also use the digital_outputs...
+  digital_outputs.setLatch();
+  digital_programmables.setLatch();
+  Serial.println("GPIO expander initialization done ");
   // Load configuration
   // readConfig();
   // useDHCP = configDoc["network"]["useDHCP"];
 
-  initNetworking();
+  Serial.println("Bringing up ethernet");
+  initEthernet();
+  Serial.println("Bringing up sensors");
   initSensors();
+  Serial.println("Bringing up Digital");
   initDigitalIO();
+  Serial.println("Bringing up analog");
   initAnalogIO();
+  Serial.println("NetworkedPortenta finished initializing. Going into operation mode.");
 }
 
 void loop() {
-  listenForSocketClients();
-  listenForSerialCommands();
+  listenForSocket();
+  listenForSerial();
   updateSensors();
   // ethernetKeepalive();
 }

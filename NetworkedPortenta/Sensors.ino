@@ -12,8 +12,9 @@ enum TBankInputType {
   J, // J-type thermocouple, two-wire
 };
 
+bool useBME680 = false;
 // For now, we fix is our inputType to PT100:
-TBankInputType TType = PT100;
+TBankInputType TType = PT1000;
 // guessing at the type here: 
 int8_t TWire = THREE_WIRE; // in three-wire mode (as opposed to two-wire), only an option for RTDs, not thermocouples
 float RREF = 430.0; // PT100 setting, will be updated in case PT1000 is selected. Documentation says 400 ohm, maybe..
@@ -50,6 +51,9 @@ void initTemp(){
 }
 
 void initBME() {
+  if (!useBME680) {
+    return; // nothing to do here. 
+  }
   if (!bme.begin(0x76)) {
     Serial.println(F("Could not find a valid humidity sensor, check wiring!"));
     while (1);
@@ -63,6 +67,9 @@ void initBME() {
 }
 
 void loopBME() {
+  if (!useBME680) {
+    return; // nothing to do here. 
+  }
   if (! bme.performReading()) {
     Serial.println("Failed to perform BME680 reading :(");
     return;
@@ -76,6 +83,9 @@ void loopBME() {
 }
 
 float getEnvSensor(String Sensor) {
+  if (!useBME680) {
+    return (-1); // nothing to do here. 
+  }
   loopBME();
   calcDewpoint();
   Sensor.toLowerCase(); // toLowerCase does inplace replacement, unlike toInt or toFloat.. 
@@ -169,5 +179,5 @@ void initSensors() {
 
 void updateSensors() {
   // Read sensor data and process it. Not sure we need to do this at regular intervals.. 
-  // loopBME();
+  loopBME();
 }
