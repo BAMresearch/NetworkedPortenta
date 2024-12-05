@@ -14,10 +14,10 @@ enum TBankInputType {
 
 bool useBME680 = false;
 // For now, we fix is our inputType to PT100:
-TBankInputType TType = PT1000;
+TBankInputType TType = PT100;
 // guessing at the type here: 
 int8_t TWire = THREE_WIRE; // in three-wire mode (as opposed to two-wire), only an option for RTDs, not thermocouples
-float RREF = 430.0; // PT100 setting, will be updated in case PT1000 is selected. Documentation says 400 ohm, maybe..
+float RREF = 400.0; // PT100 setting, will be updated in case PT1000 is selected. Documentation says 400 ohm, maybe..
 float RNOMINAL = 100.0; // PT100 setting, will be updated in case PT1000 is selected
 
 int nTBank = 3; // number of inputs on the temperature bank
@@ -42,7 +42,7 @@ void initTemp(){
     return; // nothing more to do here
   }
   if (TType==PT1000) {
-    RREF *= 10.0; // update for PT1000
+    // RREF *= 10.0; // update for PT1000 // nope, reference stays at 400
     RNOMINAL *= 10.0; // update for PT1000
   }
   temp_probes.rtd.begin(TWire); // two or three wire
